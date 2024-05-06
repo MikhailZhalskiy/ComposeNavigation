@@ -5,10 +5,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.*
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import com.mw.example.mylibrary.favorite.FeatureDetailFavoriteScreen
 import com.mw.example.mylibrary.favorite.FeatureFavoriteListScreen
 

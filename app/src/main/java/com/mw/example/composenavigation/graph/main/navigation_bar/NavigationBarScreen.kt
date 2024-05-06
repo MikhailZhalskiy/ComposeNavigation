@@ -6,21 +6,38 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import com.mw.example.composenavigation.graph.*
+import androidx.navigation.toRoute
+import com.mw.example.composenavigation.graph.EventBusNavigation
+import com.mw.example.composenavigation.graph.Navigation
+import com.mw.example.composenavigation.graph.NavigationEvent
+import com.mw.example.composenavigation.graph.Screen
 import com.mw.example.composenavigation.graph.main.navigation_bar.call.CallListScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.DetailEmailScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailListScreen
 import com.mw.example.composenavigation.graph.main.navigation_bar.event.EventListScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.favorite.DetailFavoriteScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.favorite.FavoriteListScreen
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationBarScreen(
     navigateCallDetailScreen: (String) -> Unit = {},
@@ -34,7 +51,7 @@ fun NavigationBarScreen(
         BarItem("Event", Icons.Filled.Share, Navigation.EventList),
     )
 
-    var selectedIndex by rememberSaveable { mutableStateOf(0) }
+    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
 
 //    val printBackStack by remember {
 //        derivedStateOf {
@@ -54,8 +71,8 @@ fun NavigationBarScreen(
                     label = { Text(items[0].label) },
                     selected = selectedIndex == 0,
                     onClick = {
-                        navController.navigate(items[0].screen.route()) {
-                            popUpTo(items[selectedIndex].screen.route()) {
+                        navController.navigate(items[0].screen) {
+                            popUpTo(items[selectedIndex].screen) {
                                 saveState = true
                                 inclusive = true
                             }
@@ -71,8 +88,8 @@ fun NavigationBarScreen(
                     label = { Text(items[1].label) },
                     selected = selectedIndex == 1,
                     onClick = {
-                        navController.navigate(items[1].screen.route()) {
-                            popUpTo(items[selectedIndex].screen.route()) {
+                        navController.navigate(items[1].screen) {
+                            popUpTo(items[selectedIndex].screen) {
                                 saveState = true
                                 inclusive = true
                             }
@@ -87,8 +104,8 @@ fun NavigationBarScreen(
                     label = { Text(items[2].label) },
                     selected = selectedIndex == 2,
                     onClick = {
-                        navController.navigate(items[2].screen.route()) {
-                            popUpTo(items[selectedIndex].screen.route()) {
+                        navController.navigate(items[2].screen) {
+                            popUpTo(items[selectedIndex].screen) {
                                 saveState = true
                                 inclusive = true
                             }
@@ -104,8 +121,8 @@ fun NavigationBarScreen(
                     label = { Text(items[3].label) },
                     selected = selectedIndex == 3,
                     onClick = {
-                        navController.navigate(items[3].screen.route()) {
-                            popUpTo(items[selectedIndex].screen.route()) {
+                        navController.navigate(items[3].screen) {
+                            popUpTo(items[selectedIndex].screen) {
                                 saveState = true
                                 inclusive = true
                             }
@@ -121,7 +138,7 @@ fun NavigationBarScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = Navigation.EmailList.route(),
+            startDestination = Navigation.EmailList,
             modifier = Modifier.padding(it)
         ) {
             addEmailGraph(navController)
@@ -137,23 +154,19 @@ fun NavigationBarScreen(
 }
 
 fun NavGraphBuilder.addEmailGraph(navController: NavHostController) {
-    navigation(startDestination = Screen.EmailList.route(), route = Navigation.EmailList.route()) {
+    navigation<Navigation.EmailList>(startDestination = Screen.EmailList) {
 
-        composable(route = Screen.EmailList.route()) {
+        composable<Screen.EmailList> {
             EmailListScreen(
                 navigateEmailDetailScreen = {
-                    navController.navigate(Screen.EmailDetail.createRouteWithArgs(it))
+                    navController.navigate(Screen.EmailDetail(it))
                 }
             )
         }
 
-        composable(
-            route = Screen.EmailDetail.route(),
-            arguments = Screen.EmailDetail.arguments()
-        ) { navBackStackEntry ->
-            val email =
-                navBackStackEntry.arguments?.getString(Screen.EmailDetail.emailArg).orEmpty()
-            DetailEmailScreen(email)
+        composable<Screen.EmailDetail> { navBackStackEntry ->
+            val email: Screen.EmailDetail = navBackStackEntry.toRoute()
+            DetailEmailScreen(email.email)
         }
     }
 }
@@ -161,25 +174,18 @@ fun NavGraphBuilder.addEmailGraph(navController: NavHostController) {
 fun NavGraphBuilder.addFavoriteGraph(
     navController: NavHostController,
 ) {
-    navigation(
-        startDestination = Screen.FavoriteList.route(),
-        route = Navigation.FavoriteList.route()
-    ) {
-        composable(route = Screen.FavoriteList.route()) {
+    navigation<Navigation.FavoriteList>(startDestination = Screen.FavoriteList,) {
+        composable<Screen.FavoriteList> {
             FavoriteListScreen(
                 navigateFavoriteDetailScreen = {
-                    navController.navigate(Screen.FavoriteDetail.createRouteWithArgs(it))
+                    navController.navigate(Screen.FavoriteDetail(it))
                 }
             )
         }
 
-        composable(
-            route = Screen.FavoriteDetail.route(),
-            arguments = Screen.FavoriteDetail.arguments()
-        ) { navBackStackEntry ->
-            val favorite =
-                navBackStackEntry.arguments?.getString(Screen.FavoriteDetail.favoriteArg).orEmpty()
-            DetailFavoriteScreen(favorite)
+        composable<Screen.FavoriteDetail> { navBackStackEntry ->
+            val favorite: Screen.FavoriteDetail = navBackStackEntry.toRoute()
+            DetailFavoriteScreen(favorite.email)
         }
     }
 }
@@ -187,8 +193,8 @@ fun NavGraphBuilder.addFavoriteGraph(
 fun NavGraphBuilder.addCallGraph(
     navigateCallDetailScreen: (String) -> Unit = {},
 ) {
-    navigation(startDestination = Screen.CallList.route(), route = Navigation.CallList.route()) {
-        composable(route = Screen.CallList.route()) {
+    navigation<Navigation.CallList>(startDestination = Screen.CallList) {
+        composable<Screen.CallList> {
             CallListScreen(
                 navigateCallDetailScreen = navigateCallDetailScreen
             )
@@ -199,8 +205,8 @@ fun NavGraphBuilder.addCallGraph(
 fun NavGraphBuilder.addEventGraph(
     navigateEventDetailScreen: (String) -> Unit = {},
 ) {
-    navigation(startDestination = Screen.EventList.route(), route = Navigation.EventList.route()) {
-        composable(route = Screen.EventList.route()) {
+    navigation<Navigation.EventList>(startDestination = Screen.EventList) {
+        composable<Screen.EventList> {
             EventListScreen(
                 navigateEventDetailScreen = navigateEventDetailScreen
             )

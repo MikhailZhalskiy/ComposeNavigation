@@ -3,8 +3,21 @@ package com.mw.example.composenavigation.graph.main.tab
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabPosition
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -17,10 +30,10 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import com.mw.example.composenavigation.graph.main.navigation_bar.EmailListScreen
-import com.mw.example.mylibrary.favorite.FeatureFavoriteListScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailListScreen
 import com.mw.example.composenavigation.graph.main.navigation_bar.call.CallListScreen
 import com.mw.example.composenavigation.graph.main.navigation_bar.event.EventListScreen
+import com.mw.example.mylibrary.favorite.FeatureFavoriteListScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
@@ -64,7 +77,7 @@ fun NavigationTabScreen(
                 ScrollableTabRow(
                     selectedTabIndex = pagerState.currentPage,
                     indicator = { tabPositions ->
-                        TabRowDefaults.Indicator(
+                        TabRowDefaults.SecondaryIndicator(
                             Modifier.pagerTabIndicatorOffset(
                                 pagerState = pagerState,
                                 tabPositions = tabPositions

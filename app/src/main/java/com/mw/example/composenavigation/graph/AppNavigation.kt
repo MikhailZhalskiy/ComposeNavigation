@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.mw.example.composenavigation.graph.main.NavigationDrawerScreen
 import com.mw.example.composenavigation.graph.main.navigation_bar.call.DetailCallScreen
 import com.mw.example.composenavigation.graph.main.navigation_bar.event.DetailEventScreen
@@ -25,7 +26,7 @@ fun AppNavigation() {
             .onEach {
                 when(it) {
                     is NavigationEvent.Event -> {
-                        navController.navigate(Screen.EventDetail.createRouteWithArgs(it.event))
+                        navController.navigate(Screen.EventDetail(it.event))
                     }
                 }
             }
@@ -35,22 +36,20 @@ fun AppNavigation() {
     ComposeNavigationTheme {
         NavHost(
             navController = navController,
-            startDestination = Screen.Splash.route(),
+            startDestination = Screen.Splash,
         ) {
-            composable(
-                route = Screen.Splash.route()
-            ) {
+            composable<Screen.Splash> {
                 SplashScreen(
                     navigateWelcomeScreen = {
-                        navController.navigate(Screen.Welcome.route()) {
-                            popUpTo(Screen.Splash.route()) {
+                        navController.navigate(Screen.Welcome) {
+                            popUpTo(Screen.Splash) {
                                 inclusive = true
                             }
                         }
                     },
                     navigateLoginScreen = {
-                        navController.navigate(Screen.Login.route()) {
-                            popUpTo(Screen.Splash.route()) {
+                        navController.navigate(Screen.Login) {
+                            popUpTo(Screen.Splash) {
                                 inclusive = true
                             }
                         }
@@ -58,36 +57,30 @@ fun AppNavigation() {
                 )
             }
 
-            composable(
-                route = Screen.Welcome.route()
-            ) {
+            composable<Screen.Welcome>{
                 WelcomeScreen()
             }
 
-            composable(
-                route = Screen.Login.route()
-            ) {
+            composable<Screen.Login>{
                 LoginScreen(
                     navigateMainScreen = {
-                        navController.navigate(Screen.NavigationDrawer.route()) {
-                            popUpTo(Screen.Login.route()) {
+                        navController.navigate(Screen.NavigationDrawer) {
+                            popUpTo(Screen.Login) {
                                 inclusive = true
                             }
                         }
                     },
                     navigateRegistrationScreen = {
-                        navController.navigate(Screen.Registration.route())
+                        navController.navigate(Screen.Registration)
                     }
                 )
             }
 
-            composable(
-                route = Screen.Registration.route()
-            ) {
+            composable<Screen.Registration> {
                 RegistrationScreen(
                     navigateMainScreen = {
-                        navController.navigate(Screen.NavigationDrawer.route()){
-                            popUpTo(Screen.Login.route()) {
+                        navController.navigate(Screen.NavigationDrawer){
+                            popUpTo(Screen.Login) {
                                 inclusive = true
                             }
                         }
@@ -95,30 +88,22 @@ fun AppNavigation() {
                 )
             }
 
-            composable(
-                route = Screen.NavigationDrawer.route()
-            ) {
+            composable<Screen.NavigationDrawer>{
                 NavigationDrawerScreen(
                     navigateCallDetailScreen = {
-                        navController.navigate(Screen.CallDetail.createRouteWithArgs(it))
+                        navController.navigate(Screen.CallDetail(it))
                     }
                 )
             }
 
-            composable(
-                route = Screen.CallDetail.route(),
-                arguments = Screen.CallDetail.arguments()
-            ) { navBackStackEntry ->
-                val call = navBackStackEntry.arguments?.getString(Screen.CallDetail.callArg).orEmpty()
-                DetailCallScreen(call)
+            composable<Screen.CallDetail> { navBackStackEntry ->
+                val call: Screen.CallDetail = navBackStackEntry.toRoute()
+                DetailCallScreen(call.email)
             }
 
-            composable(
-                route = Screen.EventDetail.route(),
-                arguments = Screen.EventDetail.arguments()
-            ) { navBackStackEntry ->
-                val event = navBackStackEntry.arguments?.getString(Screen.EventDetail.eventArg).orEmpty()
-                DetailEventScreen(event)
+            composable<Screen.EventDetail> { navBackStackEntry ->
+                val event: Screen.EventDetail = navBackStackEntry.toRoute()
+                DetailEventScreen(event.event)
             }
         }
     }

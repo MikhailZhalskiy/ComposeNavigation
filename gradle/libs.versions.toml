@@ -1,0 +1,46 @@
+[versions]
+accompanist-pager = "0.26.2-beta"
+agp = "8.4.0"
+kotlin = "1.9.22"
+core-ktx = "1.13.1"
+activity-compose = "1.9.0"
+compose-bom = "2024.05.00"
+
+kotlinx-serialization-json = "1.6.3"
+lifecycle-runtime-ktx = "2.7.0"
+
+material3 = "1.2.1"
+org-jetbrains-kotlin-jvm = "1.9.22"
+ksp = "1.9.21-1.0.16"
+navigation-compose = "2.8.0-alpha08"
+
+ui = "1.6.7"
+ui-tooling = "1.6.7"
+
+[libraries]
+#android
+accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist-pager" }
+accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist-pager" }
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+androidx-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3" }
+androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
+androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "ui" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "ui" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
+
+#compose
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "ui-tooling" }
+#navigation
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "org-jetbrains-kotlin-jvm" }
+devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+

@@ -5,16 +5,33 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.mw.example.composenavigation.App
 import com.mw.example.composenavigation.graph.EventBusNavigation
 import com.mw.example.composenavigation.graph.NavigationEvent
@@ -22,13 +39,12 @@ import com.mw.example.composenavigation.graph.Screen
 import com.mw.example.composenavigation.graph.main.backdrop.NavigationBackdropScreen
 import com.mw.example.composenavigation.graph.main.bottom_app_bar.NavigationBottomAppBarScreen
 import com.mw.example.composenavigation.graph.main.bottom_sheet.NavigationBottomSheetScreen
-import com.mw.example.composenavigation.graph.main.navigation_bar.DetailEmailScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.DetailEmailScreen
 import com.mw.example.composenavigation.graph.main.navigation_bar.NavigationBarScreen
 import com.mw.example.composenavigation.graph.main.navigation_bar.addCallGraph
 import com.mw.example.composenavigation.graph.main.tab.NavigationTabScreen
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationDrawerScreen(
     navigateCallDetailScreen: (String) -> Unit = {},
@@ -42,11 +58,11 @@ fun NavigationDrawerScreen(
         DrawerItem("Tab", Icons.Filled.Face, Screen.NavigationTabBar),
         DrawerItem("BottomSheet", Icons.Filled.ShoppingCart, Screen.NavigationBottomSheet),
         DrawerItem("Backdrop", Icons.Filled.AccountBox, Screen.NavigationBackdrop),
-        DrawerItem("BottomAppBar", Icons.Filled.ExitToApp, Screen.NavigationBottomAppBar),
+        DrawerItem("BottomAppBar", Icons.Filled.AccountCircle, Screen.NavigationBottomAppBar),
         DrawerItem("FavoriteFeatureApi", Icons.Filled.Favorite, Screen.FeatureFavorite),
     )
 
-    var selectedIndex by rememberSaveable { mutableStateOf(0) }
+    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
 
     val navController = rememberNavController()
 
@@ -66,8 +82,8 @@ fun NavigationDrawerScreen(
                         selected = index == selectedIndex,
                         onClick = {
                             scope.launch { drawerState.close() }
-                            navController.navigate(item.screen.route()) {
-                                popUpTo(items[selectedIndex].screen.route()) {
+                            navController.navigate(item.screen) {
+                                popUpTo(items[selectedIndex].screen) {
                                     saveState = true
                                     inclusive = true
                                 }
@@ -82,18 +98,21 @@ fun NavigationDrawerScreen(
             }
         }
     ) {
-        NavHost(navController = navController, startDestination = Screen.NavigationBar.route()) {
+        NavHost(
+            navController = navController,
+            startDestination = Screen.NavigationBar
+        ) {
 
-            composable(route = Screen.NavigationBar.route()) {
+            composable<Screen.NavigationBar> {
                 NavigationBarScreen(
                     navigateCallDetailScreen = navigateCallDetailScreen
                 )
             }
 
-            composable(route = Screen.NavigationTabBar.route()) {
+            composable<Screen.NavigationTabBar> {
                 NavigationTabScreen(
                     navigateEmailDetailScreen = {
-                        navController.navigate(Screen.EmailDetail.createRouteWithArgs(it))
+                        navController.navigate(Screen.EmailDetail(it))
                     },
                     navigateCallDetailScreen = navigateCallDetailScreen,
                     navigateEventDetailScreen = {
@@ -105,27 +124,23 @@ fun NavigationDrawerScreen(
                 )
             }
 
-            composable(
-                route = Screen.EmailDetail.route(),
-                arguments = Screen.EmailDetail.arguments()
-            ) { navBackStackEntry ->
-                val email =
-                    navBackStackEntry.arguments?.getString(Screen.EmailDetail.emailArg).orEmpty()
-                DetailEmailScreen(email)
+            composable<Screen.EmailDetail> { navBackStackEntry ->
+                val email: Screen.EmailDetail = navBackStackEntry.toRoute()
+                DetailEmailScreen(email.email)
             }
 
-            composable(route = Screen.NavigationBottomSheet.route()) {
+            composable<Screen.NavigationBottomSheet> {
                 NavigationBottomSheetScreen()
             }
 
-            composable(route = Screen.NavigationBackdrop.route()) {
+            composable<Screen.NavigationBackdrop> {
                 NavigationBackdropScreen(navigateCallDetailScreen = navigateCallDetailScreen)
             }
 
-            composable(route = Screen.NavigationBottomAppBar.route()) {
+            composable<Screen.NavigationBottomAppBar> {
                 NavigationBottomAppBarScreen(
                     navigateCallListScreen = {
-                        navController.navigate(Screen.CallList.route())
+                        navController.navigate(Screen.CallList)
                     }
                 )
             }
@@ -136,7 +151,7 @@ fun NavigationDrawerScreen(
 
 //            App.instance.getFeatureDestination().composableFeatureDestination(this, navController)
 
-            composable(route = Screen.FeatureFavorite.route()) {
+            composable<Screen.FeatureFavorite> {
                 App.instance.getFlowScreen()()
             }
         }

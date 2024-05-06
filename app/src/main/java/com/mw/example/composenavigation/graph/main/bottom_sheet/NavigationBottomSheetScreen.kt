@@ -5,10 +5,14 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import com.mw.example.composenavigation.graph.main.navigation_bar.DetailEmailScreen
-import com.mw.example.composenavigation.graph.main.navigation_bar.EmailListScreen
+import androidx.compose.runtime.setValue
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.DetailEmailScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailListScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)

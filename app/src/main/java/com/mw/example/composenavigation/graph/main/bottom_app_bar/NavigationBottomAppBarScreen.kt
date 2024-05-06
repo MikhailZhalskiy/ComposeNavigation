@@ -5,15 +5,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.*
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.mw.example.composenavigation.graph.Screen
-import com.mw.example.composenavigation.graph.main.navigation_bar.DetailEmailScreen
-import com.mw.example.composenavigation.graph.main.navigation_bar.EmailListScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.DetailEmailScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailListScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,8 +34,8 @@ fun NavigationBottomAppBarScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            navController.navigate(Screen.EmailList.route()) {
-                                popUpTo(Screen.EmailList.route())
+                            navController.navigate(Screen.EmailList) {
+                                popUpTo(Screen.EmailList)
                                 launchSingleTop = true
                             }
                         }
@@ -53,22 +59,18 @@ fun NavigationBottomAppBarScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.EmailList.route(),
+            startDestination = Screen.EmailList,
             modifier = Modifier.padding(it)
         ) {
-            composable(route = Screen.EmailList.route()) {
+            composable<Screen.EmailList> {
                 EmailListScreen() {
-                    navController.navigate(Screen.EmailDetail.createRouteWithArgs(it))
+                    navController.navigate(Screen.EmailDetail(it))
                 }
             }
 
-            composable(
-                route = Screen.EmailDetail.route(),
-                arguments = Screen.EmailDetail.arguments()
-            ) { navBackStackEntry ->
-                val email =
-                    navBackStackEntry.arguments?.getString(Screen.EmailDetail.emailArg).orEmpty()
-                DetailEmailScreen(email)
+            composable<Screen.EmailDetail> { navBackStackEntry ->
+                val email: Screen.EmailDetail = navBackStackEntry.toRoute()
+                DetailEmailScreen(email.email)
             }
         }
     }
