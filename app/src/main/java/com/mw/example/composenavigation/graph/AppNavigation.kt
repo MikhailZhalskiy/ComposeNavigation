@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.mw.example.composenavigation.graph.main.NavigationDrawerScreen
@@ -36,56 +37,60 @@ fun AppNavigation() {
     ComposeNavigationTheme {
         NavHost(
             navController = navController,
-            startDestination = Screen.Splash,
+            startDestination = Screen.LoginGraph,
         ) {
-            composable<Screen.Splash> {
-                SplashScreen(
-                    navigateWelcomeScreen = {
-                        navController.navigate(Screen.Welcome) {
-                            popUpTo(Screen.Splash) {
-                                inclusive = true
-                            }
-                        }
-                    },
-                    navigateLoginScreen = {
-                        navController.navigate(Screen.Login) {
-                            popUpTo(Screen.Splash) {
-                                inclusive = true
-                            }
-                        }
-                    }
-                )
-            }
 
-            composable<Screen.Welcome>{
-                WelcomeScreen()
-            }
+            navigation<Screen.LoginGraph>(startDestination = Screen.Splash) {
 
-            composable<Screen.Login>{
-                LoginScreen(
-                    navigateMainScreen = {
-                        navController.navigate(Screen.NavigationDrawer) {
-                            popUpTo(Screen.Login) {
-                                inclusive = true
+                composable<Screen.Splash> {
+                    SplashScreen(
+                        navigateWelcomeScreen = {
+                            navController.navigate(Screen.Welcome) {
+                                popUpTo(Screen.Splash) {
+                                    inclusive = true
+                                }
+                            }
+                        },
+                        navigateLoginScreen = {
+                            navController.navigate(Screen.Login) {
+                                popUpTo(Screen.Splash) {
+                                    inclusive = true
+                                }
                             }
                         }
-                    },
-                    navigateRegistrationScreen = {
-                        navController.navigate(Screen.Registration)
-                    }
-                )
-            }
+                    )
+                }
 
-            composable<Screen.Registration> {
-                RegistrationScreen(
-                    navigateMainScreen = {
-                        navController.navigate(Screen.NavigationDrawer){
-                            popUpTo(Screen.Login) {
-                                inclusive = true
+                composable<Screen.Welcome>{
+                    WelcomeScreen()
+                }
+
+                composable<Screen.Login>{
+                    LoginScreen(
+                        navigateMainScreen = {
+                            navController.navigate(Screen.NavigationDrawer) {
+                                popUpTo(Screen.Login) {
+                                    inclusive = true
+                                }
+                            }
+                        },
+                        navigateRegistrationScreen = {
+                            navController.navigate(Screen.Registration)
+                        }
+                    )
+                }
+
+                composable<Screen.Registration> {
+                    RegistrationScreen(
+                        navigateMainScreen = {
+                            navController.navigate(Screen.NavigationDrawer){
+                                popUpTo(Screen.Login) {
+                                    inclusive = true
+                                }
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
 
             composable<Screen.NavigationDrawer>{

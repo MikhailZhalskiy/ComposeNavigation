@@ -68,6 +68,9 @@ sealed class Screen {
     ): Screen()
 
     @Serializable
+    data object LoginGraph: Screen()
+
+    @Serializable
     data object FeatureFavorite: Screen()
 }
 

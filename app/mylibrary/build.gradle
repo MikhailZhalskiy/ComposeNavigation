@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.compose.compiler)
 }
 
 android {
@@ -30,9 +32,6 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
-    }
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
@@ -55,11 +54,6 @@ dependencies {
 
     implementation 'com.google.accompanist:accompanist-pager:0.26.2-beta'
     implementation 'com.google.accompanist:accompanist-pager-indicators:0.26.2-beta'
-
-//    testImplementation 'junit:junit:4.13.2'
-//    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
-//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
-//    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.3.2"
 
     debugImplementation "androidx.compose.ui:ui-tooling:1.4.3"
     debugImplementation "androidx.compose.ui:ui-test-manifest:1.4.3"
