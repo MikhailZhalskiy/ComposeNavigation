@@ -25,18 +25,36 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import androidx.navigation.toRoute
 import com.mw.example.composenavigation.graph.EventBusNavigation
 import com.mw.example.composenavigation.graph.Navigation
 import com.mw.example.composenavigation.graph.NavigationEvent
-import com.mw.example.composenavigation.graph.Screen
+import com.mw.example.composenavigation.graph.main.navigation_bar.call.CallList
 import com.mw.example.composenavigation.graph.main.navigation_bar.call.CallListScreen
-import com.mw.example.composenavigation.graph.main.navigation_bar.email.DetailEmailScreen
-import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailListScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailDetail
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailList
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.emailDetailDestination
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.emailListDestination
+import com.mw.example.composenavigation.graph.main.navigation_bar.event.EventList
 import com.mw.example.composenavigation.graph.main.navigation_bar.event.EventListScreen
-import com.mw.example.composenavigation.graph.main.navigation_bar.favorite.DetailFavoriteScreen
-import com.mw.example.composenavigation.graph.main.navigation_bar.favorite.FavoriteListScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.favorite.FavoriteDetail
+import com.mw.example.composenavigation.graph.main.navigation_bar.favorite.FavoriteList
+import com.mw.example.composenavigation.graph.main.navigation_bar.favorite.favoriteDetailDestination
+import com.mw.example.composenavigation.graph.main.navigation_bar.favorite.favoriteListDestination
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object NavigationBar
+
+fun NavGraphBuilder.navigationBar(
+    navigateCallDetailScreen: (String) -> Unit = {},
+) {
+    composable<NavigationBar> {
+        NavigationBarScreen(
+            navigateCallDetailScreen = navigateCallDetailScreen
+        )
+    }
+}
 
 @Composable
 fun NavigationBarScreen(
@@ -154,47 +172,38 @@ fun NavigationBarScreen(
 }
 
 fun NavGraphBuilder.addEmailGraph(navController: NavHostController) {
-    navigation<Navigation.EmailList>(startDestination = Screen.EmailList) {
+    navigation<Navigation.EmailList>(startDestination = EmailList) {
 
-        composable<Screen.EmailList> {
-            EmailListScreen(
-                navigateEmailDetailScreen = {
-                    navController.navigate(Screen.EmailDetail(it))
-                }
-            )
-        }
+        emailListDestination(
+            navigateEmailDetailScreen = {
+                navController.navigate(EmailDetail(it))
+            }
+        )
 
-        composable<Screen.EmailDetail> { navBackStackEntry ->
-            val email: Screen.EmailDetail = navBackStackEntry.toRoute()
-            DetailEmailScreen(email.email)
-        }
+        emailDetailDestination()
     }
 }
 
 fun NavGraphBuilder.addFavoriteGraph(
     navController: NavHostController,
 ) {
-    navigation<Navigation.FavoriteList>(startDestination = Screen.FavoriteList,) {
-        composable<Screen.FavoriteList> {
-            FavoriteListScreen(
-                navigateFavoriteDetailScreen = {
-                    navController.navigate(Screen.FavoriteDetail(it))
-                }
-            )
-        }
+    navigation<Navigation.FavoriteList>(startDestination = FavoriteList) {
 
-        composable<Screen.FavoriteDetail> { navBackStackEntry ->
-            val favorite: Screen.FavoriteDetail = navBackStackEntry.toRoute()
-            DetailFavoriteScreen(favorite.email)
-        }
+        favoriteListDestination(
+            navigateFavoriteDetailScreen = {
+                navController.navigate(FavoriteDetail(it))
+            }
+        )
+
+        favoriteDetailDestination()
     }
 }
 
 fun NavGraphBuilder.addCallGraph(
     navigateCallDetailScreen: (String) -> Unit = {},
 ) {
-    navigation<Navigation.CallList>(startDestination = Screen.CallList) {
-        composable<Screen.CallList> {
+    navigation<Navigation.CallList>(startDestination = CallList) {
+        composable<CallList> {
             CallListScreen(
                 navigateCallDetailScreen = navigateCallDetailScreen
             )
@@ -205,8 +214,8 @@ fun NavGraphBuilder.addCallGraph(
 fun NavGraphBuilder.addEventGraph(
     navigateEventDetailScreen: (String) -> Unit = {},
 ) {
-    navigation<Navigation.EventList>(startDestination = Screen.EventList) {
-        composable<Screen.EventList> {
+    navigation<Navigation.EventList>(startDestination = EventList) {
+        composable<EventList> {
             EventListScreen(
                 navigateEventDetailScreen = navigateEventDetailScreen
             )

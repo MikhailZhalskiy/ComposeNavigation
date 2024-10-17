@@ -43,7 +43,6 @@ class FavoriteFeatureApi {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlowScreenFavorite() {
     val navController = rememberNavController()

@@ -1,7 +1,6 @@
 package com.mw.example.composenavigation.graph.main.bottom_sheet
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
@@ -11,11 +10,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.mw.example.composenavigation.graph.main.navigation_bar.email.DetailEmailScreen
 import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailListScreen
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalMaterialApi::class)
+@Serializable
+internal data object NavigationBottomSheet
+
+fun NavGraphBuilder.navigationBottomSheet() {
+    composable<NavigationBottomSheet> {
+        NavigationBottomSheetScreen()
+    }
+}
+
 @Composable
 fun NavigationBottomSheetScreen() {
     val scope = rememberCoroutineScope()

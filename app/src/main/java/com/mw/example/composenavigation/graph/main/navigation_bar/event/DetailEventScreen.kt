@@ -9,6 +9,22 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal data class EventDetail(
+    val event: String
+)
+
+fun NavGraphBuilder.eventDetailDestination() {
+    composable<EventDetail> { navBackStackEntry ->
+        val event: EventDetail = navBackStackEntry.toRoute()
+        DetailEventScreen(event.event)
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

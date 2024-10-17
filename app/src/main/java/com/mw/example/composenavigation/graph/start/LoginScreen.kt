@@ -16,6 +16,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal data object Login
+
+fun NavGraphBuilder.loginDestination(
+    navigateMainScreen: () -> Unit = {},
+    navigateRegistrationScreen: () -> Unit = {}
+) {
+    composable<Login> {
+        LoginScreen(
+            navigateMainScreen = navigateMainScreen,
+            navigateRegistrationScreen = navigateRegistrationScreen
+        )
+    }
+}
 
 @Composable
 fun LoginScreen(

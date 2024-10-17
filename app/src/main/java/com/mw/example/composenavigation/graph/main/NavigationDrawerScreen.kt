@@ -28,22 +28,43 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.mw.example.composenavigation.App
 import com.mw.example.composenavigation.graph.EventBusNavigation
 import com.mw.example.composenavigation.graph.NavigationEvent
 import com.mw.example.composenavigation.graph.Screen
-import com.mw.example.composenavigation.graph.main.backdrop.NavigationBackdropScreen
-import com.mw.example.composenavigation.graph.main.bottom_app_bar.NavigationBottomAppBarScreen
-import com.mw.example.composenavigation.graph.main.bottom_sheet.NavigationBottomSheetScreen
-import com.mw.example.composenavigation.graph.main.navigation_bar.email.DetailEmailScreen
-import com.mw.example.composenavigation.graph.main.navigation_bar.NavigationBarScreen
+import com.mw.example.composenavigation.graph.main.backdrop.NavigationBackdrop
+import com.mw.example.composenavigation.graph.main.backdrop.navigationBackdrop
+import com.mw.example.composenavigation.graph.main.bottom_app_bar.NavigationBottomAppBar
+import com.mw.example.composenavigation.graph.main.bottom_app_bar.navigationBottomAppBar
+import com.mw.example.composenavigation.graph.main.bottom_sheet.NavigationBottomSheet
+import com.mw.example.composenavigation.graph.main.bottom_sheet.navigationBottomSheet
+import com.mw.example.composenavigation.graph.main.navigation_bar.NavigationBar
 import com.mw.example.composenavigation.graph.main.navigation_bar.addCallGraph
-import com.mw.example.composenavigation.graph.main.tab.NavigationTabScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.call.CallList
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailDetail
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.emailDetailDestination
+import com.mw.example.composenavigation.graph.main.navigation_bar.navigationBar
+import com.mw.example.composenavigation.graph.main.tab.NavigationTabBar
+import com.mw.example.composenavigation.graph.main.tab.navigationTabBar
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal data object NavigationDrawer
+
+fun NavGraphBuilder.navigationDrawerDestination(
+    navigateCallDetailScreen: (String) -> Unit = {},
+) {
+    composable<NavigationDrawer> {
+        NavigationDrawerScreen(
+            navigateCallDetailScreen = navigateCallDetailScreen
+        )
+    }
+}
 
 @Composable
 fun NavigationDrawerScreen(
@@ -54,11 +75,11 @@ fun NavigationDrawerScreen(
     val scope = rememberCoroutineScope()
 
     val items = listOf(
-        DrawerItem("NavigationBar", Icons.Filled.Menu, Screen.NavigationBar),
-        DrawerItem("Tab", Icons.Filled.Face, Screen.NavigationTabBar),
-        DrawerItem("BottomSheet", Icons.Filled.ShoppingCart, Screen.NavigationBottomSheet),
-        DrawerItem("Backdrop", Icons.Filled.AccountBox, Screen.NavigationBackdrop),
-        DrawerItem("BottomAppBar", Icons.Filled.AccountCircle, Screen.NavigationBottomAppBar),
+        DrawerItem("NavigationBar", Icons.Filled.Menu, NavigationBar),
+        DrawerItem("Tab", Icons.Filled.Face, NavigationTabBar),
+        DrawerItem("BottomSheet", Icons.Filled.ShoppingCart, NavigationBottomSheet),
+        DrawerItem("Backdrop", Icons.Filled.AccountBox, NavigationBackdrop),
+        DrawerItem("BottomAppBar", Icons.Filled.AccountCircle, NavigationBottomAppBar),
         DrawerItem("FavoriteFeatureApi", Icons.Filled.Favorite, Screen.FeatureFavorite),
     )
 
@@ -100,50 +121,36 @@ fun NavigationDrawerScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.NavigationBar
+            startDestination = NavigationBar
         ) {
+            navigationBar(navigateCallDetailScreen = navigateCallDetailScreen)
 
-            composable<Screen.NavigationBar> {
-                NavigationBarScreen(
-                    navigateCallDetailScreen = navigateCallDetailScreen
-                )
-            }
-
-            composable<Screen.NavigationTabBar> {
-                NavigationTabScreen(
-                    navigateEmailDetailScreen = {
-                        navController.navigate(Screen.EmailDetail(it))
-                    },
-                    navigateCallDetailScreen = navigateCallDetailScreen,
-                    navigateEventDetailScreen = {
-                        scope.launch {
-                            EventBusNavigation.send(NavigationEvent.Event(it))
-                        }
-                    },
-                    menuActionButtonClick = { scope.launch { drawerState.open() } }
-                )
-            }
-
-            composable<Screen.EmailDetail> { navBackStackEntry ->
-                val email: Screen.EmailDetail = navBackStackEntry.toRoute()
-                DetailEmailScreen(email.email)
-            }
-
-            composable<Screen.NavigationBottomSheet> {
-                NavigationBottomSheetScreen()
-            }
-
-            composable<Screen.NavigationBackdrop> {
-                NavigationBackdropScreen(navigateCallDetailScreen = navigateCallDetailScreen)
-            }
-
-            composable<Screen.NavigationBottomAppBar> {
-                NavigationBottomAppBarScreen(
-                    navigateCallListScreen = {
-                        navController.navigate(Screen.CallList)
+            navigationTabBar(
+                navigateEmailDetailScreen = {
+                    navController.navigate(EmailDetail(it))
+                },
+                navigateCallDetailScreen = navigateCallDetailScreen,
+                navigateEventDetailScreen = {
+                    scope.launch {
+                        EventBusNavigation.send(NavigationEvent.Event(it))
                     }
-                )
-            }
+                },
+                menuActionButtonClick = { scope.launch { drawerState.open() } }
+            )
+
+            emailDetailDestination()
+
+            navigationBackdrop(
+                navigateCallDetailScreen = navigateCallDetailScreen
+            )
+
+            navigationBottomSheet()
+
+            navigationBottomAppBar(
+                navigateCallListScreen = {
+                    navController.navigate(CallList)
+                }
+            )
 
             addCallGraph(navigateCallDetailScreen = navigateCallDetailScreen)
 
@@ -161,5 +168,5 @@ fun NavigationDrawerScreen(
 data class DrawerItem(
     val label: String,
     val icon: ImageVector,
-    val screen: Screen
+    val screen: Any
 )

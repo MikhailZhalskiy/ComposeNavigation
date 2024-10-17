@@ -12,6 +12,22 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal data object EmailList
+
+fun NavGraphBuilder.emailListDestination(
+    navigateEmailDetailScreen: (String) -> Unit = {},
+) {
+    composable<EmailList> {
+        EmailListScreen(
+            navigateEmailDetailScreen = navigateEmailDetailScreen
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

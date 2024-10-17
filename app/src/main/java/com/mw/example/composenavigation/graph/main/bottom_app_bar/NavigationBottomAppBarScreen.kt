@@ -6,22 +6,35 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import com.mw.example.composenavigation.graph.Screen
-import com.mw.example.composenavigation.graph.main.navigation_bar.email.DetailEmailScreen
-import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailListScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailDetail
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailList
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.emailDetailDestination
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.emailListDestination
+import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Serializable
+internal data object NavigationBottomAppBar
+
+fun NavGraphBuilder.navigationBottomAppBar(
+    navigateCallListScreen: () -> Unit = {},
+) {
+    composable<NavigationBottomAppBar> {
+        NavigationBottomAppBarScreen(
+            navigateCallListScreen = navigateCallListScreen
+        )
+    }
+}
+
 @Composable
 fun NavigationBottomAppBarScreen(
     navigateCallListScreen: () -> Unit = {},
@@ -34,8 +47,8 @@ fun NavigationBottomAppBarScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            navController.navigate(Screen.EmailList) {
-                                popUpTo(Screen.EmailList)
+                            navController.navigate(EmailList) {
+                                popUpTo(EmailList)
                                 launchSingleTop = true
                             }
                         }
@@ -59,19 +72,17 @@ fun NavigationBottomAppBarScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.EmailList,
+            startDestination = EmailList,
             modifier = Modifier.padding(it)
         ) {
-            composable<Screen.EmailList> {
-                EmailListScreen() {
-                    navController.navigate(Screen.EmailDetail(it))
-                }
-            }
 
-            composable<Screen.EmailDetail> { navBackStackEntry ->
-                val email: Screen.EmailDetail = navBackStackEntry.toRoute()
-                DetailEmailScreen(email.email)
-            }
+            emailListDestination(
+                navigateEmailDetailScreen = {
+                    navController.navigate(EmailDetail(it))
+                }
+            )
+
+            emailDetailDestination()
         }
     }
 }

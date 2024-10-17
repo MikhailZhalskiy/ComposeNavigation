@@ -2,18 +2,21 @@ package com.mw.example.composenavigation.graph
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import com.mw.example.composenavigation.graph.main.NavigationDrawerScreen
-import com.mw.example.composenavigation.graph.main.navigation_bar.call.DetailCallScreen
-import com.mw.example.composenavigation.graph.main.navigation_bar.event.DetailEventScreen
-import com.mw.example.composenavigation.graph.start.LoginScreen
-import com.mw.example.composenavigation.graph.start.RegistrationScreen
-import com.mw.example.composenavigation.graph.start.SplashScreen
-import com.mw.example.composenavigation.graph.start.WelcomeScreen
+import com.mw.example.composenavigation.graph.main.NavigationDrawer
+import com.mw.example.composenavigation.graph.main.navigationDrawerDestination
+import com.mw.example.composenavigation.graph.main.navigation_bar.call.CallDetail
+import com.mw.example.composenavigation.graph.main.navigation_bar.call.callDetailDestination
+import com.mw.example.composenavigation.graph.main.navigation_bar.event.EventDetail
+import com.mw.example.composenavigation.graph.main.navigation_bar.event.eventDetailDestination
+import com.mw.example.composenavigation.graph.start.Login
+import com.mw.example.composenavigation.graph.start.LoginGraph
+import com.mw.example.composenavigation.graph.start.Registration
+import com.mw.example.composenavigation.graph.start.Splash
+import com.mw.example.composenavigation.graph.start.Welcome
+import com.mw.example.composenavigation.graph.start.addLoginGraph
 import com.mw.example.composenavigation.ui.theme.ComposeNavigationTheme
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -25,9 +28,9 @@ fun AppNavigation() {
     LaunchedEffect(key1 = Unit) {
         EventBusNavigation.receiver()
             .onEach {
-                when(it) {
+                when (it) {
                     is NavigationEvent.Event -> {
-                        navController.navigate(Screen.EventDetail(it.event))
+                        navController.navigate(EventDetail(it.event))
                     }
                 }
             }
@@ -37,79 +40,61 @@ fun AppNavigation() {
     ComposeNavigationTheme {
         NavHost(
             navController = navController,
-            startDestination = Screen.LoginGraph,
+            startDestination = LoginGraph,
         ) {
 
-            navigation<Screen.LoginGraph>(startDestination = Screen.Splash) {
-
-                composable<Screen.Splash> {
-                    SplashScreen(
-                        navigateWelcomeScreen = {
-                            navController.navigate(Screen.Welcome) {
-                                popUpTo(Screen.Splash) {
-                                    inclusive = true
-                                }
-                            }
-                        },
-                        navigateLoginScreen = {
-                            navController.navigate(Screen.Login) {
-                                popUpTo(Screen.Splash) {
-                                    inclusive = true
-                                }
-                            }
-                        }
-                    )
+            addLoginGraph(
+                navigateWelcomeScreen = {
+                    navController.navigateToWelcome()
+                },
+                navigateLoginScreen = {
+                    navController.navigateToLogin()
+                },
+                navigateMainScreen = {
+                    navController.navigateToNavigationDrawer()
+                },
+                navigateRegistrationScreen = {
+                    navController.navigateToRegistration()
                 }
+            )
 
-                composable<Screen.Welcome>{
-                    WelcomeScreen()
+            navigationDrawerDestination(
+                navigateCallDetailScreen = { email ->
+                    navController.navigate(CallDetail(email))
                 }
+            )
 
-                composable<Screen.Login>{
-                    LoginScreen(
-                        navigateMainScreen = {
-                            navController.navigate(Screen.NavigationDrawer) {
-                                popUpTo(Screen.Login) {
-                                    inclusive = true
-                                }
-                            }
-                        },
-                        navigateRegistrationScreen = {
-                            navController.navigate(Screen.Registration)
-                        }
-                    )
-                }
+            callDetailDestination()
 
-                composable<Screen.Registration> {
-                    RegistrationScreen(
-                        navigateMainScreen = {
-                            navController.navigate(Screen.NavigationDrawer){
-                                popUpTo(Screen.Login) {
-                                    inclusive = true
-                                }
-                            }
-                        }
-                    )
-                }
-            }
-
-            composable<Screen.NavigationDrawer>{
-                NavigationDrawerScreen(
-                    navigateCallDetailScreen = {
-                        navController.navigate(Screen.CallDetail(it))
-                    }
-                )
-            }
-
-            composable<Screen.CallDetail> { navBackStackEntry ->
-                val call: Screen.CallDetail = navBackStackEntry.toRoute()
-                DetailCallScreen(call.email)
-            }
-
-            composable<Screen.EventDetail> { navBackStackEntry ->
-                val event: Screen.EventDetail = navBackStackEntry.toRoute()
-                DetailEventScreen(event.event)
-            }
+            eventDetailDestination()
         }
     }
+}
+
+fun NavController.navigateToWelcome() {
+    navigate(Welcome) {
+        popUpTo(Splash) {
+            inclusive = true
+        }
+    }
+}
+
+fun NavController.navigateToLogin() {
+    navigate(Login) {
+        popUpTo(Splash) {
+            inclusive = true
+        }
+    }
+}
+
+fun NavController.navigateToNavigationDrawer() {
+    navigate(NavigationDrawer) {
+        popUpTo(Login) {
+            inclusive = true
+        }
+    }
+}
+
+fun NavController.navigateToRegistration() {
+    navigate(Registration)
 }

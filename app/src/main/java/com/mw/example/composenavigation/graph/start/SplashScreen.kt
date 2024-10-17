@@ -14,7 +14,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import kotlinx.coroutines.delay
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal data object Splash
+
+fun NavGraphBuilder.splashDestination(
+    navigateWelcomeScreen: () -> Unit = {},
+    navigateLoginScreen: () -> Unit = {},
+) {
+    composable<Splash> {
+        SplashScreen(
+            navigateWelcomeScreen = navigateWelcomeScreen,
+            navigateLoginScreen = navigateLoginScreen
+        )
+    }
+}
 
 @Composable
 fun SplashScreen(

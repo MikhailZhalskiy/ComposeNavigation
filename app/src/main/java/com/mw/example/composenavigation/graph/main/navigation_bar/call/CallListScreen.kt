@@ -12,6 +12,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal data object CallList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

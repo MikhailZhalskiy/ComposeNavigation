@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.BackdropValue
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
@@ -23,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -32,7 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.mw.example.composenavigation.graph.EventBusNavigation
 import com.mw.example.composenavigation.graph.Navigation
@@ -41,15 +43,27 @@ import com.mw.example.composenavigation.graph.main.navigation_bar.addCallGraph
 import com.mw.example.composenavigation.graph.main.navigation_bar.addEmailGraph
 import com.mw.example.composenavigation.graph.main.navigation_bar.addEventGraph
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@Serializable
+data object NavigationBackdrop
+
+fun NavGraphBuilder.navigationBackdrop(
+    navigateCallDetailScreen: (String) -> Unit = {},
+) {
+    composable<NavigationBackdrop> {
+        NavigationBackdropScreen(navigateCallDetailScreen = navigateCallDetailScreen)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationBackdropScreen(
     navigateCallDetailScreen: (String) -> Unit = {},
 ) {
     val navController = rememberNavController()
     val scope = rememberCoroutineScope()
-    var selectedIndex by rememberSaveable { mutableStateOf(0) }
+    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
     val scaffoldState = rememberBackdropScaffoldState(BackdropValue.Concealed)
     val items = listOf(
         BackdropItem("Email", Icons.Filled.Email, Navigation.EmailList),

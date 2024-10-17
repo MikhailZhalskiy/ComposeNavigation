@@ -9,6 +9,22 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal data class FavoriteDetail(
+    val email: String
+)
+
+fun NavGraphBuilder.favoriteDetailDestination() {
+    composable<FavoriteDetail> { navBackStackEntry ->
+        val favorite: FavoriteDetail = navBackStackEntry.toRoute()
+        DetailFavoriteScreen(favorite.email)
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

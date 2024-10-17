@@ -1,6 +1,6 @@
 [versions]
 accompanist-pager = "0.26.2-beta"
-agp = "8.6.1"
+agp = "8.7.1"
 kotlin = "2.0.20"
 core-ktx = "1.13.1"
 activity-compose = "1.9.2"

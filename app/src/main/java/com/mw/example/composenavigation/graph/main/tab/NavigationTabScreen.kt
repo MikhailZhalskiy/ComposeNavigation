@@ -26,15 +26,37 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.lerp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailListScreen
 import com.mw.example.composenavigation.graph.main.navigation_bar.call.CallListScreen
+import com.mw.example.composenavigation.graph.main.navigation_bar.email.EmailListScreen
 import com.mw.example.composenavigation.graph.main.navigation_bar.event.EventListScreen
 import com.mw.example.mylibrary.favorite.FeatureFavoriteListScreen
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+
+@Serializable
+internal data object NavigationTabBar
+
+fun NavGraphBuilder.navigationTabBar(
+    navigateEmailDetailScreen: (String) -> Unit = {},
+    navigateCallDetailScreen: (String) -> Unit = {},
+    navigateEventDetailScreen: (String) -> Unit = {},
+    menuActionButtonClick: () -> Unit = {}
+) {
+    composable<NavigationTabBar> {
+        NavigationTabScreen(
+            navigateEmailDetailScreen = navigateEmailDetailScreen,
+            navigateCallDetailScreen = navigateCallDetailScreen,
+            navigateEventDetailScreen = navigateEventDetailScreen,
+            menuActionButtonClick = menuActionButtonClick
+        )
+    }
+}
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @Composable
